@@ -1,0 +1,19 @@
+name: smiles-gpt
+channels:
+  - pytorch
+  - anaconda
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip
+  - pandas
+  - rdkit
+  - pytorch
+  - torchvision
+  - torchaudio
+  - cpuonly
+  - pip:
+    - tokenizers
+    - adapter-transformers
+    - pytorch-lightning
+    - bertviz
