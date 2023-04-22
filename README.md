@@ -20,7 +20,7 @@ cd smiles-gpt
 ## Benchmark
 
 ### Checkpoint
-[checkpoints/benchmark-5m](https://github.com/sanjaradylov/smiles-gpt/tree/master/checkpoints/benchmark-5m)
+[checkpoints/](https://github.com/sanjaradylov/smiles-gpt/tree/master/checkpoints/)
 stores serialized model, tokenizer, and configuration. Do not modify them. Use
 `from_pretrained` method to load HuggingFace objects, e.g.,
 ```python

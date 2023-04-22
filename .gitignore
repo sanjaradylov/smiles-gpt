@@ -3,3 +3,5 @@
 **/.ipynb_checkpoints/*
 **/lightning_logs/*
 *.log
+**/logs/
+**/checkpoints/*.ckpt

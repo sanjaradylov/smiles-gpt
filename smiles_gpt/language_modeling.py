@@ -28,21 +28,24 @@ class GPT2LitModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         outputs = self(**batch)
+        loss = outputs["loss"]
+        ppl = torch.exp(loss)
+
+        self.log("ppl", ppl, on_step=True, on_epoch=False, prog_bar=True)
 
         if self.save_model_every > 0 and batch_idx % self.save_model_every == 0:
             self.transformer.save_pretrained(self.checkpoint)
 
-        return {'loss': outputs['loss']}
+        return {"loss": loss, "ppl_step": ppl}
 
     def training_epoch_end(self, outputs):
         if self.save_model_every > 0:
             self.transformer.save_pretrained(self.checkpoint)
 
-        losses = [step_output["loss"] for step_output in outputs]
-        mean_loss = torch.tensor(losses).mean()
-        ppl = torch.exp(mean_loss)
+        ppls = [step_output["ppl_step"] for step_output in outputs]
+        mean_ppl = torch.stack(ppls).mean()
 
-        self.log("ppl", ppl, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("ppl_epoch", mean_ppl, on_step=False, on_epoch=True, prog_bar=True)
 
     def configure_optimizers(self):
         parameters = self.named_parameters()

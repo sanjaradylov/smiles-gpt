@@ -14,7 +14,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchmetrics import AUROC, AveragePrecision
-from transformers import AdamW, GPT2Model, GPT2PreTrainedModel
+from transformers import GPT2Model, GPT2PreTrainedModel
 from transformers.modeling_outputs import SequenceClassifierOutputWithPast
 from transformers.adapters.model_mixin import ModelWithHeadsAdaptersMixin
 
@@ -66,8 +66,7 @@ class GPT2ForSequenceClassification(ModelWithHeadsAdaptersMixin, GPT2PreTrainedM
             token_type_ids=token_type_ids, position_ids=position_ids,
             head_mask=head_mask, inputs_embeds=inputs_embeds, use_cache=use_cache,
             output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states, return_dict=return_dict,
-            adapter_names=adapter_names)
+            output_hidden_states=output_hidden_states, return_dict=return_dict)
 
         hidden_states = transformer_outputs[0]
 
@@ -265,13 +264,13 @@ class ClassifierLitModel(pl.LightningModule):
     def _epoch_end_empty(self, outputs_ignored, roc, prc, prefix):
         mean_roc = sum(a.compute() for a in roc) / self.num_tasks
         self.log(f"{prefix}_roc", mean_roc, on_step=False, on_epoch=True, prog_bar=True)
-        mean_prc = sum(p.compute()[1] for p in prc) / self.num_tasks
+        mean_prc = sum(p.compute() for p in prc) / self.num_tasks
         self.log(f"{prefix}_prc", mean_prc, on_step=False, on_epoch=True, prog_bar=True)
 
     def _epoch_end_nonempty(self, outputs, roc, prc, prefix):
         self.log(f"{prefix}_roc", roc.compute(),
                  on_step=False, on_epoch=True, prog_bar=True)
-        self.log(f"{prefix}_prc", prc.compute()[1],
+        self.log(f"{prefix}_prc", prc.compute(),
                  on_step=False, on_epoch=True, prog_bar=True)
 
     def training_step(self, batch, batch_idx):
@@ -293,8 +292,9 @@ class ClassifierLitModel(pl.LightningModule):
         self.epoch_end(outputs, self.test_roc, self.test_prc, "test")
 
     def configure_optimizers(self):
-        optimizer = AdamW(self.parameters(), lr=self.hparams.learning_rate,
-                          weight_decay=self.hparams.weight_decay)
+        optimizer = torch.optim.AdamW(
+            self.parameters(), lr=self.hparams.learning_rate, 
+            weight_decay=self.hparams.weight_decay)
         lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(
             optimizer, self.hparams.scheduler_lambda)
         return {"optimizer": optimizer,
@@ -343,8 +343,9 @@ class RegressorLitModel(pl.LightningModule):
         self.epoch_end(outputs, "test")
 
     def configure_optimizers(self):
-        optimizer = AdamW(self.parameters(), lr=self.hparams.learning_rate,
-                          weight_decay=self.hparams.weight_decay)
+        optimizer = torch.optim.AdamW(
+            self.parameters(), lr=self.hparams.learning_rate,
+            weight_decay=self.hparams.weight_decay)
         lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(
             optimizer, self.hparams.scheduler_lambda)
         return {"optimizer": optimizer,
