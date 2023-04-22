@@ -19,7 +19,15 @@ cd smiles-gpt
 
 ## Benchmark
 
-### Checkpoint
+
+### Notebooks
+
+[notebooks/language-modeling.ipynb](https://github.com/sanjaradylov/smiles-gpt/blob/master/notebooks/language-modeling.ipynb)
+pretrains GPT-2 on 10M Pubchem SMILES data.</br>
+[notebooks/selfies-anygpt](https://github.com/sanjaradylov/smiles-gpt/tree/master/notebooks/selfies-anygpt)
+introduces *AnyGPT* for pretraining 1D molecular data.
+
+### Checkpoints
 [checkpoints/](https://github.com/sanjaradylov/smiles-gpt/tree/master/checkpoints/)
 stores serialized model, tokenizer, and configuration. Do not modify them. Use
 `from_pretrained` method to load HuggingFace objects, e.g.,

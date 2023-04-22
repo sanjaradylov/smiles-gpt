@@ -3,6 +3,7 @@ channels:
   - pytorch
   - anaconda
   - conda-forge
+  - plotly
 dependencies:
   - python=3.8
   - pip
@@ -11,9 +12,13 @@ dependencies:
   - pytorch
   - torchvision
   - torchaudio
-  - cpuonly
+  - cudatoolkit=11.0
+  - plotly
+  - optuna
+  - scikit-learn
   - pip:
     - tokenizers
     - adapter-transformers
     - pytorch-lightning
     - bertviz
+    - selfies
